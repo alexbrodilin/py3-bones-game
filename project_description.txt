@@ -1,0 +1,45 @@
+# Configuration:
+# Name
+# Throws limit
+# Bones count
+
+# Interfaces:
+# Names
+# Throws left
+# Scores count
+
+
+# Messages:
+# Enter name
+# Welcome to the game
+# Choose throws per round (1 - 3)
+# Choose bones count (2 - 3)
+# Coin toss
+# Player goes first
+# PC goes first
+# Player's turn
+# Round ended. Player/PC wins
+# Result table on game end
+# Back to settings, replay or leave?
+
+# Game logic:
+# Welcome screen and Settings screen
+#    Enter name
+#    Choose throws count
+#    Choose bones count
+# Game cycle
+#        Coin toss
+#        Set first turn Player/PC
+#        repeat throw count
+#            Throw first, throw second
+#            Show current throw scores
+#            Show overall scores
+#        Show result table
+#        Show actions menu
+# Exit
+
+
+# Events:
+# On back to settings: back to  Settings screen
+# On leave: exit
+# On replay: Game cycle with same settings
