@@ -1,11 +1,13 @@
 # -*- coding: UTF-8 -*-
 
-import random
+import random, os
 
 class Game:
     name = ""
-    throwsLeft = 0
+    throwsCount = 0
     bonesCount = 0
+    
+    throwsLeft = 0
     currentMove = 1 #1 - PC, -1 - Player
     
     curThrowScoresPC = 0
@@ -16,11 +18,7 @@ class Game:
     
     replayKey = "r"
     backToMenuKey = "b"
-    exiteKey = "x"
-    
-    
-    maxThrows = 3
-    maxBones = 3
+    exitKey = "x"
     
     # --- logic ---
     def setName(self, PlayerName):
@@ -33,16 +31,34 @@ class Game:
         self.bonesCount = Count
         
     def storeScores(self):
-        self.finalScoresTable += [self.curThrowScoresPl, self.curThrowScoresPC]
+        self.finalScoresTable.append([self.curThrowScoresPC, self.curThrowScoresPl])
         
+    def summTable(self):
+        summRowsPC = 0
+        summRowsPl = 0
+        for row in self.finalScoresTable:
+            summRowsPC += row[0]
+            summRowsPl += row[1]
+            
+        return [summRowsPC, summRowsPl]
+    
     def setPlScores(self, scores):
         self.curThrowScoresPl = scores
+        
+    def getPlScores(self):
+        return self.curThrowScoresPl
         
     def setPCScores(self, scores):
         self.curThrowScoresPC = scores
         
+    def getPCScores(self):
+        return self.curThrowScoresPC
+        
     def coinToss(self):
         self.currentMove = random.choice([-1,1])
+        
+    def switchTurn(self):
+        self.currentMove *= -1
         
     def throwBones(self):
         self.Bones = []
@@ -72,45 +88,82 @@ class Game:
             self.sayPlayerTurn()
             self.throwBones()
             self.setPlScores(sum(self.Bones))
+            
+        self.switchTurn()
+        self.drawScreen(1)
         
+    def makeThrows(self):
+        self.throw()
+        self.throw()
         self.storeScores()
-        self.showCurThrowScores()
-        self.showOverallScores()
+        self.curThrowScoresPC = 0
+        self.curThrowScoresPl = 0
+        self.throwsLeft -= 1
     
     def gameCycle(self):
-        pass
+        if self.throwsLeft == self.throwsCount: 
+            self.coinToss()
+            self.makeThrows()
+            self.gameCycle()
+        elif self.throwsLeft != 0: 
+            self.makeThrows()
+            self.gameCycle()
+        else: self.drawScreen(2)
+        
+    
+    def drawScreen(self, screenType):
+        _ = os.system('cls' if os.name == 'nt' else 'clear')
+        if screenType == 1: 
+            self.topPanel()
+            self.showCurThrowScores()
+            self.showBones()
+        elif screenType == 2:
+            self.topPanel()
+            self.endScreen()
+            
     
     # --- interface ---
+    def topPanel(self):
+        print("Player name: " + self.name + "   Bones uses: " + str(self.bonesCount) + "    Throws left: " + str(self.throwsLeft))
+        print("--------------------------------------------------------------------------------")
+    
     def sayPlayerTurn(self):
-        pass
+        print("\n\n\n                    Your turn! Press enter to throw")
+        key = input()
     
     def showCurThrowScores(self):
-        pass
-    
-    def showOverallScores(self):
-        pass
-    
-    def showResultTable(self):
-        pass
-    
-    def showActionsMenu(self):
-        pass
-    
-    # --- configuration ---
-    def askPlayerName(self):
-        pass
-    
-    def askThrowsCount(self):
-        pass
-    
-    def askBonesCount(self):
-        pass
-    
+        print("      Current PC: " + str(self.getPCScores()) + " | Player: " + str(self.getPlScores()))
+        summ = self.summTable()
+        print("      Overall       PC: " + str(summ[0]) + " | Player: " + str(summ[1]))
+        print("--------------------------------------------------------------------------------")
+        
+    def endScreen(self):
+        print("  PC       Player  \n-------------------\n")
+        for row in self.finalScoresTable:
+            print("  " + str(row[0]) + "         " + str(row[1]) + "\n")
+        summ = self.summTable()
+        print("-------------------\n  " + str(summ[0]) + "         " + str(summ[1]) + "\n")
+        print("What's next?\n"+ self.replayKey + ". Replay\n" + self.backToMenuKey + ". Back to setting\n" + self.exitKey + ". Exit")
+        
+        key = input()
+        
+        if key == self.replayKey: self.gameCycle()
+        elif key == self.backToMenuKey: self.settingsScreen()
+        elif key == self.exitKey: quit()
+        else: self.drawScreen(2)   
+        
+    def settingsScreen(self):
+        _ = os.system('cls' if os.name == 'nt' else 'clear')
+        print("Welcome, traveller! Let's play some Bones game! Choose your settings. \n\n")
+        self.name = input("What's your name? >> ")
+        self.bonesCount = int(input("How many bones whould you like to use? >> "))
+        inp = int(input("How many throws whould you like to make? >> "))
+        self.throwsCount = inp 
+        self.throwsLeft = inp
+        self.gameCycle()
+        
 game = Game()
-
-game.setBonesCount(3)
-game.throwBones()
-game.showBones()
+game.settingsScreen()
 
 
 
