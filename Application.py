@@ -18,11 +18,11 @@ class Game:
     backToMenuKey = "b"
     exiteKey = "x"
     
+    
     maxThrows = 3
     maxBones = 3
     
-    bonesSprites = ["###\n#0#\n###", "0##\n###\n##0", "0##\n#0#\n##0", "0#0\n###\n0#0", "0#0\n#0#\n0#0", "000\n###\n000"]
-           
+    # --- logic ---
     def setName(self, PlayerName):
         self.name = PlayerName
         
@@ -51,16 +51,69 @@ class Game:
         
     def showBones(self):
         for i in self.Bones:
-            print("index:" + str(i))
-            print("bone side: " + str(self.Bones[i]))
-            print(self.bonesSprites[self.Bones[i]])
-
-       
+            print(self.generateSprite(i) + "\n")
+            
+    def generateSprite(self, boneSide):
+        space = random.randint(1,76)
+        spaces = ""
+        for i in range(space): spaces += " "        
+        if boneSide == 1: return spaces + "###\n" + spaces +"#0#\n" + spaces +"###"
+        elif boneSide == 2: return spaces + "0##\n" + spaces +"###\n" + spaces +"##0"
+        elif boneSide == 3: return spaces + "0##\n" + spaces +"#0#\n" + spaces +"##0"
+        elif boneSide == 4: return spaces + "0#0\n" + spaces +"###\n" + spaces +"0#0"
+        elif boneSide == 5: return spaces + "0#0\n" + spaces +"#0#\n" + spaces +"0#0"
+        elif boneSide == 6: return spaces + "000\n" + spaces +"###\n" + spaces +"000"
+    
+    def throw(self):
+        if self.currentMove == 1:
+            self.throwBones()
+            self.setPCScores(sum(self.Bones))
+        else:
+            self.sayPlayerTurn()
+            self.throwBones()
+            self.setPlScores(sum(self.Bones))
+        
+        self.storeScores()
+        self.showCurThrowScores()
+        self.showOverallScores()
+    
+    def gameCycle(self):
+        pass
+    
+    # --- interface ---
+    def sayPlayerTurn(self):
+        pass
+    
+    def showCurThrowScores(self):
+        pass
+    
+    def showOverallScores(self):
+        pass
+    
+    def showResultTable(self):
+        pass
+    
+    def showActionsMenu(self):
+        pass
+    
+    # --- configuration ---
+    def askPlayerName(self):
+        pass
+    
+    def askThrowsCount(self):
+        pass
+    
+    def askBonesCount(self):
+        pass
+    
 game = Game()
 
 game.setBonesCount(3)
 game.throwBones()
 game.showBones()
+
+
+
 
 
 
