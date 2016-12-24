@@ -1,8 +1,8 @@
 # -*- coding: UTF-8 -*-
 
-import random, os
+import random, os, time
 
-class Game:
+class Application:
     name = ""
     throwsCount = 0
     bonesCount = 0
@@ -91,6 +91,10 @@ class Game:
             
         self.switchTurn()
         self.drawScreen(1)
+        if self.currentMove == 1: 
+            print("\nPlease wait. I'm preparing to throw...")
+            time.sleep(random.randint(3,6))
+
         
     def makeThrows(self):
         self.throw()
@@ -102,6 +106,7 @@ class Game:
     
     def gameCycle(self):
         if self.throwsLeft == self.throwsCount: 
+            self.drawScreen(1)
             self.coinToss()
             self.makeThrows()
             self.gameCycle()
@@ -120,7 +125,11 @@ class Game:
         elif screenType == 2:
             self.topPanel()
             self.endScreen()
-            
+    
+    def resetState(self):
+        self.throwsLeft = self.throwsCount;
+        self.finalScoresTable = []   
+                
     
     # --- interface ---
     def topPanel(self):
@@ -147,8 +156,12 @@ class Game:
         
         key = input()
         
-        if key == self.replayKey: self.gameCycle()
-        elif key == self.backToMenuKey: self.settingsScreen()
+        if key == self.replayKey: 
+            self.resetState()
+            self.gameCycle()
+        elif key == self.backToMenuKey: 
+            self.resetState()
+            self.settingsScreen()
         elif key == self.exitKey: quit()
         else: self.drawScreen(2)   
         
@@ -156,14 +169,28 @@ class Game:
         _ = os.system('cls' if os.name == 'nt' else 'clear')
         print("Welcome, traveller! Let's play some Bones game! Choose your settings. \n\n")
         self.name = input("What's your name? >> ")
-        self.bonesCount = int(input("How many bones whould you like to use? >> "))
-        inp = int(input("How many throws whould you like to make? >> "))
+        self.bonesCount = self.inputBonesCount()
+        inp = self.inputThrowsCount()
         self.throwsCount = inp 
         self.throwsLeft = inp
         self.gameCycle()
         
-game = Game()
-game.settingsScreen()
+    def inputBonesCount(self):
+        try:
+            inp = int(input("How many bones whould you like to use? >> "))    
+        except ValueError:
+            self.inputBonesCount()
+            
+        return inp
+    
+    def inputThrowsCount(self):
+        try:
+            inp = int(input("How many throws whould you like to make? >> "))
+        except ValueError:
+            self.inputThrowsCount()
+            
+        return inp
+
 
 
 
